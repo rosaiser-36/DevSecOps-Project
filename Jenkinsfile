@@ -9,15 +9,16 @@ pipeline {
         }
          stage('build docker image') {
             steps {
-                sh 'docker build -t nodejs-docker-image .'
+                sh 'docker build -t nodejs_app .'
             }
         }
         stage ('push docker image to docker hub'){
             steps{
-               withCredentials([usernamePassword(credentialsId: 'DockerHub', username: 'dockerHubuser', password: 'dockerhubPass')]) {
-                sh 'docker tag app_nodesjs_image $env.dockerHubuser/app_nodejs_image:latest'
-                sh 'docker login -u $env.dockerHubuser -p $env.dockerHubpass'
-                sh 'docker push $env.dockerHubuser/app_nodejs_image:latest'
+               withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'dockerHubuser', passwordVariable: 'dockerhubPass')]) {
+                echo '$env.dockerHubuser'
+                sh "docker tag nodejs_app ${env.dockerHubuser}/devsecops_project:latest"
+                sh "docker login -u ${env.dockerHubuser} -p ${env.dockerHubpass}"
+                sh "docker push ${env.dockerHubuser}/devsecops_project:latest"
                 }
             }
         }
